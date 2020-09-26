@@ -17,6 +17,9 @@ async def joinqueue(user: User, channel) -> None:
         queue.append(user)
     await channel.send(str(queue))
 
+async def showqueue(channel):
+    for i in range(len(queue)):
+        await channel.send(queue[i])
 
 async def ready(mentor: User, channel) -> None:
     student: User = queue.pop(0)
@@ -40,6 +43,8 @@ async def on_message(message: Message):
         elif tokens[0] == 'ready':
             await ready(message.author, message.channel)
         await message.channel.send('Hello!')
+        if tokens[0] == 'showqueue':
+            await showqueue(message.channel)
 
 
 client.run('NzU5NDU0ODE0NTUxMTQ2NTA2.X29vaQ.MuNF7XmF8mefy-_WzxB4vUYbAUM')
