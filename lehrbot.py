@@ -58,6 +58,7 @@ async def help(channel):
     embedVar.add_field(name="$joinqueue <class>", value="Add yourself to an existing queue.", inline=False)
     embedVar.add_field(name="$showqueue <class>", value="Show the people currently in queue.", inline=False)
     embedVar.add_field(name="$joinclass <class>", value= "Add yourself to a class.", inline=False)
+    embedVar.add_field(name="$showclasses", value= "Lists all classes.", inline=False)
     embedVar.add_field(name="$ready (admin only)", value="Move to the next student in the queue.", inline=False)
     embedVar.add_field(name="$makeclass <name> (admin only)", value="Create a class.", inline=False)
     embedVar.add_field(name="$deleteclass <name> (admin only)", value="Deletes a class.", inline=False)
