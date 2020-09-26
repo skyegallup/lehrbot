@@ -9,14 +9,18 @@ client = discord.Client()
 
 queue = []
 
-async def queue_list(command, user):
-    if command == "joinqueue":
-        queue.append(user)
-    if command == "ready":
-        queue.pop()
 
-async def joinqueue(user: User) -> None:
-    print(user.name)
+async def joinqueue(user: User, channel) -> None:
+    if user in queue:
+        queue.remove(user)
+    else:
+        queue.append(user)
+    await channel.send(str(queue))
+
+
+async def ready(mentor: User, channel) -> None:
+    student: User = queue.pop(0)
+    await channel.send(str(queue))
 
 
 @client.event
@@ -32,8 +36,9 @@ async def on_message(message: Message):
     if message.content.startswith('$'):
         tokens: List[str] = message.content[1:].split(' ')
         if tokens[0] == 'joinqueue':
-            cue_list(tokens[0], tokens[1])
-            await joinqueue(message.author)
+            await joinqueue(message.author, message.channel)
+        elif tokens[0] == 'ready':
+            await ready(message.author, message.channel)
         await message.channel.send('Hello!')
 
 
