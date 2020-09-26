@@ -21,23 +21,28 @@ async def joinqueue(user: User, channel) -> None:
         queue.append(user)
     await channel.send(str(queue))
 
+
 async def showqueue(channel):
     for i in range(len(queue)):
         await channel.send(queue[i])
 
+
+@classes.check_admin
 async def ready(mentor: Member, channel) -> None:
     student: Member = queue.pop(0)
     await channel.send(mentor.mention + " is ready for " + student.mention)
 
+
 async def help(channel):
-    embedVar = Embed(title = "Help!", description = "I need somebody to tell me valid commands", color = 0xf76902)
-    embedVar.add_field(name = "$joinqueue", value = "Add yourself to an existing queue", inline = False)
-    embedVar.add_field(name = "$showqueue", value = "Show the people currently in queue", inline = False)
-    embedVar.add_field(name = "$joinclass", value = "Add yourself to a class", inline = False)
-    embedVar.add_field(name = "$ready (admin only)", value = "Move to the next student in the queue", inline = False)
-    embedVar.add_field(name = "$makeclass (admin only)", value = "Create a class", inline = False)
-    embedVar.add_field(name = "$deleteclass (admin only)", value = "Deletes a class", inline = False)
-    await channel.send(embed = embedVar)
+    embedVar = Embed(title="Help!", description="I need somebody to tell me valid commands", color=0xf76902)
+    embedVar.add_field(name="$joinqueue", value="Add yourself to an existing queue", inline=False)
+    embedVar.add_field(name="$showqueue", value="Show the people currently in queue", inline=False)
+    embedVar.add_field(name="$joinclass", value= "Add yourself to a class", inline=False)
+    embedVar.add_field(name="$ready (admin only)", value="Move to the next student in the queue", inline=False)
+    embedVar.add_field(name="$makeclass <name> (admin only)", value="Create a class", inline=False)
+    embedVar.add_field(name="$deleteclass <name> (admin only)", value="Deletes a class", inline=False)
+    await channel.send(embed=embedVar)
+
 
 @client.event
 async def on_ready():

@@ -25,7 +25,6 @@ async def makeclass(caller: Member, channel, name: str) -> None:
         reason="Requested by " + caller.mention
     )
 
-    await new_role.edit(position=999)  # move to bottom of hierarchy
     await channel.send(caller.mention + ' Class role "{}" has been created.'.format(name))
 
 
@@ -38,6 +37,7 @@ async def deleteclass(caller: Member, channel, name: str) -> None:
     for role in roles:
         if role.name == "Class-" + name:
             await role.delete(reason="Requested by " + caller.mention)
+            await channel.send(caller.mention + ' Class role "{}" has been deleted.'.format(name))
             return
 
     # only runs if the class doesn't exist
