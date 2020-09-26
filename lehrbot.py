@@ -21,6 +21,9 @@ async def joinqueue(user: User, channel) -> None:
         queue.append(user)
     await channel.send(str(queue))
 
+async def showqueue(channel):
+    for i in range(len(queue)):
+        await channel.send(queue[i])
 
 async def ready(mentor: Member, channel) -> None:
     student: Member = queue.pop(0)
@@ -52,6 +55,8 @@ async def on_message(message: Message):
             await joinqueue(message.author, message.channel)
         elif tokens[0] == 'ready':
             await ready(message.author, message.channel)
+        elif tokens[0] == 'showqueue':
+            await showqueue(message.channel)
         elif tokens[0] == 'help':
             await help(message.channel)
         elif tokens[0] == 'makeclass':
