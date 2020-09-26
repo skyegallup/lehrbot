@@ -1,6 +1,7 @@
 from typing import List
 
 import discord
+from discord import Member
 from discord.user import User
 from discord.message import Message
 
@@ -18,9 +19,9 @@ async def joinqueue(user: User, channel) -> None:
     await channel.send(str(queue))
 
 
-async def ready(mentor: User, channel) -> None:
-    student: User = queue.pop(0)
-    await channel.send(str(queue))
+async def ready(mentor: Member, channel) -> None:
+    student: Member = queue.pop(0)
+    await channel.send(mentor.mention + " is ready for " + student.mention)
 
 
 @client.event
