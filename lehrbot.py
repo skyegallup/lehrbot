@@ -43,6 +43,8 @@ async def on_message(message: Message):
             await ready(message.author, message.channel)
         elif tokens[0] == 'makeclass':
             await classes.makeclass(message.author, message.channel, tokens[1])
+        elif tokens[0] == 'deleteclass':
+            await classes.deleteclass(message.author, message.channel, tokens[1])
         await message.channel.send('Hello!')
 
 
