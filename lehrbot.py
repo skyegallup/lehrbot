@@ -5,6 +5,8 @@ from discord.user import User
 from discord.message import Message
 from discord.embeds import Embed
 
+import classes
+
 
 client = discord.Client()
 
@@ -51,6 +53,10 @@ async def on_message(message: Message):
             await ready(message.author, message.channel)
         elif tokens[0] == 'help':
             await help(message.channel)
+        elif tokens[0] == 'makeclass':
+            await classes.makeclass(message.author, message.channel, tokens[1])
+        elif tokens[0] == 'deleteclass':
+            await classes.deleteclass(message.author, message.channel, tokens[1])
         else:
             await message.channel.send("Invalid command. Type $help for more options")
 
