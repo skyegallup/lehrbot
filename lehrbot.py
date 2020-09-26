@@ -1,7 +1,11 @@
-from typing import List
+from collections import defaultdict
+from typing import Dict, List
 
 import discord
 from discord import Member
+from discord.channel import TextChannel
+from discord.guild import Guild
+from discord.role import Role
 from discord.user import User
 from discord.message import Message
 from discord.embeds import Embed
@@ -10,16 +14,26 @@ import classes
 
 
 client = discord.Client()
+queues: Dict[str, List[Member]] = defaultdict(list)
 
-queue = []
+
+def get_all_classes(guild: Guild) -> List[str]:
+    roles: List[Role] = guild.roles
+    r: Role
+    return [r.name[6:] for r in roles if r.name.startswith('Class-')]
 
 
-async def joinqueue(user: User, channel) -> None:
-    if user in queue:
-        queue.remove(user)
+async def joinqueue(user: Member, channel: TextChannel, cls: str) -> None:
+    if cls not in get_all_classes(channel.guild):
+        await channel.send(user.mention + ' Section {} does not exist'.format(cls))
+        return
+
+    if user in queues[cls]:
+        queues[cls].remove(user)
+        await channel.send(user.mention + ' has left the {} queue'.format(cls))
     else:
-        queue.append(user)
-    await channel.send(str(queue))
+        queues[cls].append(user)
+        await channel.send(user.mention + ' has joined the {} queue'.format(cls))
 
 
 async def showqueue(channel):
@@ -35,7 +49,7 @@ async def ready(mentor: Member, channel) -> None:
 
 async def help(channel):
     embedVar = Embed(title="Help!", description="I need somebody to tell me valid commands", color=0xf76902)
-    embedVar.add_field(name="$joinqueue", value="Add yourself to an existing queue", inline=False)
+    embedVar.add_field(name="$joinqueue <class>", value="Add yourself to an existing queue", inline=False)
     embedVar.add_field(name="$showqueue", value="Show the people currently in queue", inline=False)
     embedVar.add_field(name="$joinclass", value= "Add yourself to a class", inline=False)
     embedVar.add_field(name="$ready (admin only)", value="Move to the next student in the queue", inline=False)
@@ -57,7 +71,7 @@ async def on_message(message: Message):
     if message.content.startswith('$'):
         tokens: List[str] = message.content[1:].split(' ')
         if tokens[0] == 'joinqueue':
-            await joinqueue(message.author, message.channel)
+            await joinqueue(message.author, message.channel, tokens[1])
         elif tokens[0] == 'ready':
             await ready(message.author, message.channel)
         elif tokens[0] == 'showqueue':
