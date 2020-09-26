@@ -7,6 +7,13 @@ from discord.message import Message
 
 client = discord.Client()
 
+queue = []
+
+async def queue_list(command, user):
+    if command == "joinqueue":
+        queue.append(user)
+    if command == "ready":
+        queue.pop()
 
 async def joinqueue(user: User) -> None:
     print(user.name)
@@ -25,6 +32,7 @@ async def on_message(message: Message):
     if message.content.startswith('$'):
         tokens: List[str] = message.content[1:].split(' ')
         if tokens[0] == 'joinqueue':
+            cue_list(tokens[0], tokens[1])
             await joinqueue(message.author)
         await message.channel.send('Hello!')
 
