@@ -42,9 +42,15 @@ async def joinqueue(user: Member, channel: TextChannel, cls: str) -> None:
         await channel.send(user.mention + ' has joined the {} queue.'.format(cls))
 
 
-async def showqueue(channel):
-    for i in range(len(queue)):
-        await channel.send(queue[i])
+async def showqueue(caller: Member, channel: TextChannel, cls: str):
+    user: Member
+    if len(queues[cls]) == 0:
+        await channel.send('{} Queue "{}" is empty.'.format(caller.mention, cls))
+    else:
+        out: str = '{} Members in "{}" queue:\n'.format(caller.mention, cls)
+        for user in queues[cls]:
+            out += user.display_name + '\n'
+        await channel.send(out)
 
 
 @classes.check_admin
@@ -88,7 +94,7 @@ async def on_message(message: Message):
         elif tokens[0] == 'ready':
             await ready(message.author, message.channel, tokens[1])
         elif tokens[0] == 'showqueue':
-            await showqueue(message.channel)
+            await showqueue(message.author, message.channel, tokens[1])
         elif tokens[0] == 'help':
             await help(message.channel)
         elif tokens[0] == 'makeclass':
