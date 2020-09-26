@@ -74,6 +74,7 @@ async def help(channel):
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+    await client.change_presence(activity=discord.Game("$help"))
 
 @classes.check_admin
 async def clear(caller, channel, cls):
