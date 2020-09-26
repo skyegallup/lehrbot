@@ -4,6 +4,8 @@ import discord
 from discord.user import User
 from discord.message import Message
 
+import classes
+
 
 client = discord.Client()
 
@@ -39,6 +41,10 @@ async def on_message(message: Message):
             await joinqueue(message.author, message.channel)
         elif tokens[0] == 'ready':
             await ready(message.author, message.channel)
+        elif tokens[0] == 'makeclass':
+            await classes.makeclass(message.author, message.channel, tokens[1])
+        elif tokens[0] == 'deleteclass':
+            await classes.deleteclass(message.author, message.channel, tokens[1])
         await message.channel.send('Hello!')
 
 
