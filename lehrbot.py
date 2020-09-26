@@ -42,8 +42,8 @@ async def showqueue(channel):
 
 
 @classes.check_admin
-async def ready(mentor: Member, channel) -> None:
-    student: Member = queue.pop(0)
+async def ready(mentor: Member, channel, cls) -> None:
+    student: Member = queues[cls].pop(0)
     await channel.send(mentor.mention + " is ready for " + student.mention)
 
 
@@ -73,7 +73,7 @@ async def on_message(message: Message):
         if tokens[0] == 'joinqueue':
             await joinqueue(message.author, message.channel, tokens[1])
         elif tokens[0] == 'ready':
-            await ready(message.author, message.channel)
+            await ready(message.author, message.channel, tokens[1])
         elif tokens[0] == 'showqueue':
             await showqueue(message.channel)
         elif tokens[0] == 'help':
