@@ -31,15 +31,15 @@ async def showclasses(user: Member, channel: TextChannel) -> None:
 
 async def joinqueue(user: Member, channel: TextChannel, cls: str) -> None:
     if cls not in get_all_classes(channel.guild):
-        await channel.send(user.mention + ' Section {} does not exist'.format(cls))
+        await channel.send(user.mention + ' Section {} does not exist.'.format(cls))
         return
 
     if user in queues[cls]:
         queues[cls].remove(user)
-        await channel.send(user.mention + ' has left the {} queue'.format(cls))
+        await channel.send(user.mention + ' has left the {} queue.'.format(cls))
     else:
         queues[cls].append(user)
-        await channel.send(user.mention + ' has joined the {} queue'.format(cls))
+        await channel.send(user.mention + ' has joined the {} queue.'.format(cls))
 
 
 async def showqueue(channel):
@@ -50,18 +50,18 @@ async def showqueue(channel):
 @classes.check_admin
 async def ready(mentor: Member, channel, cls) -> None:
     student: Member = queues[cls].pop(0)
-    await channel.send(mentor.mention + " is ready for " + student.mention)
+    await channel.send(mentor.mention + " is ready for " + student.mention + ".")
 
 
 async def help(channel):
-    embedVar = Embed(title="Help!", description="I need somebody to tell me valid commands", color=0xf76902)
-    embedVar.add_field(name="$joinqueue <class>", value="Add yourself to an existing queue", inline=False)
-    embedVar.add_field(name="$showqueue <class>", value="Show the people currently in queue", inline=False)
-    embedVar.add_field(name="$joinclass <class>", value= "Add yourself to a class", inline=False)
-    embedVar.add_field(name="$ready (admin only)", value="Move to the next student in the queue", inline=False)
-    embedVar.add_field(name="$makeclass <name> (admin only)", value="Create a class", inline=False)
-    embedVar.add_field(name="$deleteclass <name> (admin only)", value="Deletes a class", inline=False)
-    embedVar.add_field(name="$clear <class> (admin only)", value="Clears the queue of the specified class", inline=False)
+    embedVar = Embed(title="Help!", description="Possible commands:", color=0xf76902)
+    embedVar.add_field(name="$joinqueue <class>", value="Add yourself to an existing queue.", inline=False)
+    embedVar.add_field(name="$showqueue <class>", value="Show the people currently in queue.", inline=False)
+    embedVar.add_field(name="$joinclass <class>", value= "Add yourself to a class.", inline=False)
+    embedVar.add_field(name="$ready (admin only)", value="Move to the next student in the queue.", inline=False)
+    embedVar.add_field(name="$makeclass <name> (admin only)", value="Create a class.", inline=False)
+    embedVar.add_field(name="$deleteclass <name> (admin only)", value="Deletes a class.", inline=False)
+    embedVar.add_field(name="$clear <class> (admin only)", value="Clears the queue of the specified class.", inline=False)
     await channel.send(embed=embedVar)
 
 
@@ -72,7 +72,7 @@ async def on_ready():
 @classes.check_admin
 async def clear(caller, channel, cls):
     queues[cls] = list()
-    await channel.send(caller + " has cleared the queue for " + cls)
+    await channel.send(caller + " has cleared the queue for " + cls + ".")
 
 @client.event
 async def on_message(message: Message):
@@ -98,7 +98,7 @@ async def on_message(message: Message):
         elif tokens[0] == 'clear':
             await clear(message.author, message.channel, tokens[1])
         else:
-            await message.channel.send("Invalid command. Type $help for more options")
+            await message.channel.send("Invalid command. Type $help if you need somebody.")
 
 
 client.run('NzU5NDU0ODE0NTUxMTQ2NTA2.X29vaQ.MuNF7XmF8mefy-_WzxB4vUYbAUM')
