@@ -23,6 +23,12 @@ def get_all_classes(guild: Guild) -> List[str]:
     return [r.name[6:] for r in roles if r.name.startswith('Class-')]
 
 
+async def showclasses(user: Member, channel: TextChannel) -> None:
+    out = user.mention + " List of classes:\n"
+    out += "\n".join(get_all_classes(channel.guild))
+    await channel.send(out)
+
+
 async def joinqueue(user: Member, channel: TextChannel, cls: str) -> None:
     if cls not in get_all_classes(channel.guild):
         await channel.send(user.mention + ' Section {} does not exist'.format(cls))
@@ -72,6 +78,8 @@ async def on_message(message: Message):
         tokens: List[str] = message.content[1:].split(' ')
         if tokens[0] == 'joinqueue':
             await joinqueue(message.author, message.channel, tokens[1])
+        elif tokens[0] == 'showclasses':
+            await showclasses(message.author, message.channel)
         elif tokens[0] == 'ready':
             await ready(message.author, message.channel)
         elif tokens[0] == 'showqueue':
