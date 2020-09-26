@@ -56,11 +56,12 @@ async def ready(mentor: Member, channel, cls) -> None:
 async def help(channel):
     embedVar = Embed(title="Help!", description="I need somebody to tell me valid commands", color=0xf76902)
     embedVar.add_field(name="$joinqueue <class>", value="Add yourself to an existing queue", inline=False)
-    embedVar.add_field(name="$showqueue", value="Show the people currently in queue", inline=False)
-    embedVar.add_field(name="$joinclass", value= "Add yourself to a class", inline=False)
+    embedVar.add_field(name="$showqueue <class>", value="Show the people currently in queue", inline=False)
+    embedVar.add_field(name="$joinclass <class>", value= "Add yourself to a class", inline=False)
     embedVar.add_field(name="$ready (admin only)", value="Move to the next student in the queue", inline=False)
     embedVar.add_field(name="$makeclass <name> (admin only)", value="Create a class", inline=False)
     embedVar.add_field(name="$deleteclass <name> (admin only)", value="Deletes a class", inline=False)
+    embedVar.add_field(name="$clear <class> (admin only)", value="Clears the queue of the specified class", inline=False)
     await channel.send(embed=embedVar)
 
 
@@ -68,6 +69,10 @@ async def help(channel):
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
+@classes.check_admin
+async def clear(caller, channel, cls):
+    queues[cls] = list()
+    await channel.send(caller + " has cleared the queue for " + cls)
 
 @client.event
 async def on_message(message: Message):
@@ -90,6 +95,8 @@ async def on_message(message: Message):
             await classes.makeclass(message.author, message.channel, tokens[1])
         elif tokens[0] == 'deleteclass':
             await classes.deleteclass(message.author, message.channel, tokens[1])
+        elif tokens[0] == 'clear':
+            await clear(message.author, message.channel, tokens[1])
         else:
             await message.channel.send("Invalid command. Type $help for more options")
 
