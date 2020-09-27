@@ -1,5 +1,6 @@
 from collections import defaultdict
 from typing import Dict, List
+import os
 
 import discord
 from discord import Member
@@ -108,4 +109,4 @@ async def on_message(message: Message):
             await message.channel.send("Invalid command. Type $help if you need somebody.")
 
 
-client.run('NzU5NDU0ODE0NTUxMTQ2NTA2.X29vaQ.MuNF7XmF8mefy-_WzxB4vUYbAUM')
+client.run(os.getenv('LEHRBOT_API_KEY', ''))
