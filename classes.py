@@ -20,13 +20,15 @@ def check_admin(func: Callable[[Member, TextChannel], None]):
 @check_admin
 async def makeclass(caller: Member, channel: TextChannel, name: str) -> None:
     guild: Guild = caller.guild
-    new_role: Role = await guild.create_role(
+    await guild.create_role(
         name="Class-" + name,
         mentionable=True,
         reason="Requested by " + caller.mention
     )
 
-    await channel.send(caller.mention + ' Class role "{}" has been created.'.format(name))
+    await channel.send(
+        caller.mention + ' Class role "{}" has been created.'.format(name)
+    )
 
 
 @check_admin
@@ -38,8 +40,13 @@ async def deleteclass(caller: Member, channel: TextChannel, name: str) -> None:
     for role in roles:
         if role.name == "Class-" + name:
             await role.delete(reason="Requested by " + caller.mention)
-            await channel.send(caller.mention + ' Class role "{}" has been deleted.'.format(name))
+            await channel.send(
+                caller.mention +
+                ' Class role "{}" has been deleted.'.format(name)
+            )
             return
 
     # only runs if the class doesn't exist
-    await channel.send(caller.mention + ' Class role "{}" does not exist.'.format(name))
+    await channel.send(
+        caller.mention + ' Class role "{}" does not exist.'.format(name)
+    )
