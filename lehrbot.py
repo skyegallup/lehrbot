@@ -7,14 +7,13 @@ from discord import Member
 from discord.channel import TextChannel
 from discord.guild import Guild
 from discord.role import Role
-from discord.user import User
 from discord.message import Message
 from discord.embeds import Embed
 
 import classes
 
 
-client = discord.Client()
+client: discord.Client = discord.Client()
 queues: Dict[str, List[Member]] = defaultdict(list)
 
 
@@ -43,7 +42,7 @@ async def joinqueue(user: Member, channel: TextChannel, cls: str) -> None:
         await channel.send(user.mention + ' has joined the {} queue.'.format(cls))
 
 
-async def showqueue(caller: Member, channel: TextChannel, cls: str):
+async def showqueue(caller: Member, channel: TextChannel, cls: str) -> None:
     user: Member
     if len(queues[cls]) == 0:
         await channel.send('{} Queue "{}" is empty.'.format(caller.mention, cls))
@@ -55,12 +54,12 @@ async def showqueue(caller: Member, channel: TextChannel, cls: str):
 
 
 @classes.check_admin
-async def ready(mentor: Member, channel, cls) -> None:
+async def ready(mentor: Member, channel: TextChannel, cls: str) -> None:
     student: Member = queues[cls].pop(0)
     await channel.send(mentor.mention + " is ready for " + student.mention + ".")
 
 
-async def help(channel):
+async def help(channel: TextChannel) -> None:
     embedVar = Embed(title="Help!", description="Possible commands:", color=0xf76902)
     embedVar.add_field(name="$joinqueue <class>", value="Add yourself to an existing queue.", inline=False)
     embedVar.add_field(name="$showqueue <class>", value="Show the people currently in queue.", inline=False)
@@ -73,17 +72,19 @@ async def help(channel):
 
 
 @client.event
-async def on_ready():
+async def on_ready() -> None:
     print('We have logged in as {0.user}'.format(client))
     await client.change_presence(activity=discord.Game("$help"))
 
+
 @classes.check_admin
-async def clear(caller, channel, cls):
+async def clear(caller: Member, channel: TextChannel, cls: str) -> None:
     queues[cls] = list()
     await channel.send(caller + " has cleared the queue for " + cls + ".")
 
+
 @client.event
-async def on_message(message: Message):
+async def on_message(message: Message) -> None:
     if message.author == client.user:
         return
 
@@ -109,4 +110,5 @@ async def on_message(message: Message):
             await message.channel.send("Invalid command. Type $help if you need somebody.")
 
 
-client.run(os.getenv('LEHRBOT_API_KEY', ''))
+if __name__ == "__main__":
+    client.run(os.getenv('LEHRBOT_API_KEY', ''))

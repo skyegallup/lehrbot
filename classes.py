@@ -1,11 +1,12 @@
-from typing import List
+from typing import Callable, List
+from discord.channel import TextChannel
 from discord.guild import Guild
 from discord.member import Member
 from discord.role import Role
 
 
-def check_admin(func):
-    async def wrapper(caller: Member, channel, *args, **kwargs):
+def check_admin(func: Callable[[Member, TextChannel], None]):
+    async def wrapper(caller: Member, channel: TextChannel, *args, **kwargs):
         if not caller.guild_permissions.administrator:
             await channel.send(
                 caller.mention + " You must be an administrator "
@@ -17,7 +18,7 @@ def check_admin(func):
 
 
 @check_admin
-async def makeclass(caller: Member, channel, name: str) -> None:
+async def makeclass(caller: Member, channel: TextChannel, name: str) -> None:
     guild: Guild = caller.guild
     new_role: Role = await guild.create_role(
         name="Class-" + name,
@@ -29,7 +30,7 @@ async def makeclass(caller: Member, channel, name: str) -> None:
 
 
 @check_admin
-async def deleteclass(caller: Member, channel, name: str) -> None:
+async def deleteclass(caller: Member, channel: TextChannel, name: str) -> None:
     guild: Guild = caller.guild
     roles: List[Role] = guild.roles
 
