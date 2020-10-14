@@ -18,35 +18,35 @@ def check_admin(func: Callable[[Member, TextChannel], None]):
 
 
 @check_admin
-async def makeclass(caller: Member, channel: TextChannel, name: str) -> None:
+async def maketopic(caller: Member, channel: TextChannel, name: str) -> None:
     guild: Guild = caller.guild
     await guild.create_role(
-        name="Class-" + name,
+        name="Topic-" + name,
         mentionable=True,
         reason="Requested by " + caller.mention
     )
 
     await channel.send(
-        caller.mention + ' Class role "{}" has been created.'.format(name)
+        caller.mention + ' Topic role "{}" has been created.'.format(name)
     )
 
 
 @check_admin
-async def deleteclass(caller: Member, channel: TextChannel, name: str) -> None:
+async def deletetopic(caller: Member, channel: TextChannel, name: str) -> None:
     guild: Guild = caller.guild
     roles: List[Role] = guild.roles
 
     role: Role  # doesn't do anything except type hints
     for role in roles:
-        if role.name == "Class-" + name:
+        if role.name == "Topic-" + name:
             await role.delete(reason="Requested by " + caller.mention)
             await channel.send(
                 caller.mention +
-                ' Class role "{}" has been deleted.'.format(name)
+                ' Topic role "{}" has been deleted.'.format(name)
             )
             return
 
-    # only runs if the class doesn't exist
+    # only runs if the topic doesn't exist
     await channel.send(
-        caller.mention + ' Class role "{}" does not exist.'.format(name)
+        caller.mention + ' Topic role "{}" does not exist.'.format(name)
     )

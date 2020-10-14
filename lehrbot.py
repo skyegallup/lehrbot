@@ -10,60 +10,60 @@ from discord.role import Role
 from discord.message import Message
 from discord.embeds import Embed
 
-import classes
+import topics
 
 
 client: discord.Client = discord.Client()
 queues: Dict[str, List[Member]] = defaultdict(list)
 
 
-def get_all_classes(guild: Guild) -> List[str]:
+def get_all_topics(guild: Guild) -> List[str]:
     roles: List[Role] = guild.roles
     r: Role
     return [r.name[6:] for r in roles if r.name.startswith('Class-')]
 
 
-async def showclasses(user: Member, channel: TextChannel) -> None:
+async def showtopics(user: Member, channel: TextChannel) -> None:
     out = user.mention + " List of classes:\n"
-    out += "\n".join(get_all_classes(channel.guild))
+    out += "\n".join(get_all_topics(channel.guild))
     await channel.send(out)
 
 
-async def joinqueue(user: Member, channel: TextChannel, cls: str) -> None:
-    if cls not in get_all_classes(channel.guild):
+async def joinqueue(user: Member, channel: TextChannel, topic: str) -> None:
+    if topic not in get_all_topics(channel.guild):
         await channel.send(
-            user.mention + ' Section {} does not exist.'.format(cls)
+            user.mention + ' Topic {} does not exist.'.format(topic)
         )
         return
 
-    if user in queues[cls]:
-        queues[cls].remove(user)
+    if user in queues[topic]:
+        queues[topic].remove(user)
         await channel.send(
-            user.mention + ' has left the {} queue.'.format(cls)
+            user.mention + ' has left the {} queue.'.format(topic)
         )
     else:
-        queues[cls].append(user)
+        queues[topic].append(user)
         await channel.send(
-            user.mention + ' has joined the {} queue.'.format(cls)
+            user.mention + ' has joined the {} queue.'.format(topic)
         )
 
 
-async def showqueue(caller: Member, channel: TextChannel, cls: str) -> None:
+async def showqueue(caller: Member, channel: TextChannel, topic: str) -> None:
     user: Member
-    if len(queues[cls]) == 0:
+    if len(queues[topic]) == 0:
         await channel.send(
-            '{} Queue "{}" is empty.'.format(caller.mention, cls)
+            '{} Queue "{}" is empty.'.format(caller.mention, topic)
         )
     else:
-        out: str = '{} Members in "{}" queue:\n'.format(caller.mention, cls)
-        for user in queues[cls]:
+        out: str = '{} Members in "{}" queue:\n'.format(caller.mention, topic)
+        for user in queues[topic]:
             out += user.display_name + '\n'
         await channel.send(out)
 
 
-@classes.check_admin
-async def ready(mentor: Member, channel: TextChannel, cls: str) -> None:
-    student: Member = queues[cls].pop(0)
+@topics.check_admin
+async def ready(mentor: Member, channel: TextChannel, topic: str) -> None:
+    student: Member = queues[topic].pop(0)
     await channel.send(
         mentor.mention + " is ready for " + student.mention + "."
     )
@@ -76,38 +76,38 @@ async def help(channel: TextChannel) -> None:
         color=0xf76902
     )
     embedVar.add_field(
-        name="$joinqueue <class>",
+        name="$joinqueue <topic>",
         value="Add yourself to an existing queue.",
         inline=False
     )
     embedVar.add_field(
-        name="$showqueue <class>",
+        name="$showqueue <topic>",
         value="Show the people currently in queue.",
         inline=False
     )
     embedVar.add_field(
-        name="$showclasses",
-        value="Lists all classes.",
+        name="$showtopics",
+        value="Lists all topics.",
         inline=False
     )
     embedVar.add_field(
         name="$ready (admin only)",
-        value="Move to the next student in the queue.",
+        value="Move to the next person in the queue.",
         inline=False
     )
     embedVar.add_field(
-        name="$makeclass <name> (admin only)",
-        value="Create a class.",
+        name="$maketopic <name> (admin only)",
+        value="Create a topic.",
         inline=False
     )
     embedVar.add_field(
-        name="$deleteclass <name> (admin only)",
-        value="Deletes a class.",
+        name="$deletetopic <name> (admin only)",
+        value="Deletes a topic.",
         inline=False
     )
     embedVar.add_field(
-        name="$clear <class> (admin only)",
-        value="Clears the queue of the specified class.",
+        name="$clear <topic> (admin only)",
+        value="Clears the queue of the specified topic.",
         inline=False
     )
     await channel.send(embed=embedVar)
@@ -119,10 +119,10 @@ async def on_ready() -> None:
     await client.change_presence(activity=discord.Game("$help"))
 
 
-@classes.check_admin
-async def clear(caller: Member, channel: TextChannel, cls: str) -> None:
-    queues[cls] = list()
-    await channel.send(caller + " has cleared the queue for " + cls + ".")
+@topics.check_admin
+async def clear(caller: Member, channel: TextChannel, topic: str) -> None:
+    queues[topic] = list()
+    await channel.send(caller + " has cleared the queue for " + topic + ".")
 
 
 @client.event
@@ -134,18 +134,18 @@ async def on_message(message: Message) -> None:
         tokens: List[str] = message.content[1:].split(' ')
         if tokens[0] == 'joinqueue':
             await joinqueue(message.author, message.channel, tokens[1])
-        elif tokens[0] == 'showclasses':
-            await showclasses(message.author, message.channel)
+        elif tokens[0] == 'showtopics':
+            await showtopics(message.author, message.channel)
         elif tokens[0] == 'ready':
             await ready(message.author, message.channel, tokens[1])
         elif tokens[0] == 'showqueue':
             await showqueue(message.author, message.channel, tokens[1])
         elif tokens[0] == 'help':
             await help(message.channel)
-        elif tokens[0] == 'makeclass':
-            await classes.makeclass(message.author, message.channel, tokens[1])
-        elif tokens[0] == 'deleteclass':
-            await classes.deleteclass(
+        elif tokens[0] == 'maketopic':
+            await topics.maketopic(message.author, message.channel, tokens[1])
+        elif tokens[0] == 'deletetopic':
+            await topics.deletetopic(
                 message.author, message.channel, tokens[1]
             )
         elif tokens[0] == 'clear':
